@@ -25,6 +25,7 @@ public class Tvnetfirst {
     private final By ARTICLE_COMMENTS_COUNT = By.xpath(".//span[(@class = 'article-share__item--count')]");
     private final By ARTICLE_COMMENTS_BUTTON = By.xpath(".//a[contains(@class, 'article-share__item--comments')]");
 
+    private final By COMMENT_PAGE_BODY = By.tagName("a");
     private final By COMMENT_PAGE_TITLE = By.xpath(".//h1[(@class = 'article-headline')]");
     private final By COMMENT_PAGE_COMMENTS_COUNT = By.xpath(".//span[contains(@class, 'article-comments-heading')]");
     private final By COMMENT_PAGE_USER_COMMENT_COUNT = By.xpath(".//li[contains(@id, 'comment-')]");
@@ -126,8 +127,13 @@ public class Tvnetfirst {
         int CommentsPageIntComments = 0;
         CommentsPageIntComments = parseCommentCountFour(rightComments);
 
-        //List<WebElement> optionCount = driver.findElements(COMMENT_PAGE_USER_COMMENT_COUNT);
+        List<WebElement> usersCount = driver.findElements(COMMENT_PAGE_USER_COMMENT_COUNT);
 
+        for (WebElement userCount : usersCount) {
+            userCount.findElement(COMMENT_PAGE_USER_COMMENT_COUNT).getSize();
+
+
+        }
 
         //check it
         Assertions.assertTrue(homePageTitle.startsWith(commentPageTitle), "Titles are not equal!");
