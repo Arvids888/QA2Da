@@ -118,6 +118,7 @@ public class Tvnetfirst {
         //get comments
         WebElement commentPageComments = driver.findElement(COMMENT_PAGE_COMMENTS_COUNT);
 
+        //close browser
         if (commentPageComments.findElements(COMMENT_PAGE_COMMENTS_COUNT).isEmpty()) {
             closeBrowser();
         }
