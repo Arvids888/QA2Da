@@ -16,8 +16,8 @@ import java.util.List;
 public class Tvnetfirst {
 
     private final By ARTICLE = By.tagName("article");
-    private final String ARTICLE_BY_TITLE = "Konflikts Etiopijā: kas un kāpēc par to ir jāzina?";
-    private final By TITLE = By.xpath(".//span[contains(@class, 'article__headline')]");
+    private final String ARTICLE_BY_TITLE = "NBA zvaigzne Covid-19 dēļ zaudējis septiņus ģimenes locekļus";
+    private final By TITLE = By.xpath(".//span[contains(@class, 'list-article__headline')]");
     private final By COMMENTS_COUNT = By.xpath(".//span[contains(@class, 'article__comment')]");
 
     private final By ARTICLE_TITLES_AND_COMMENTS = By.tagName("article");
@@ -84,10 +84,9 @@ public class Tvnetfirst {
         //get all comments
         List <WebElement> articleComments = driver.findElements(ARTICLE_COMMENTS_COUNT);
 
+
         //get correct comment
         WebElement articleComment = articleComments.get(1);
-
-        //find comment count
 
         //acquiring comments and turning into Integer
         String rightComments = articleComment.getText();
@@ -111,8 +110,8 @@ public class Tvnetfirst {
 
 
         //wait for title
-        WebDriverWait wait2 = new WebDriverWait(driver, 10);
-        wait2.until(ExpectedConditions.visibilityOfElementLocated(COMMENT_PAGE_TITLE));
+        WebDriverWait waitTwo = new WebDriverWait(driver, 10);
+        waitTwo.until(ExpectedConditions.visibilityOfElementLocated(COMMENT_PAGE_TITLE));
 
 
         //get title
@@ -140,12 +139,12 @@ public class Tvnetfirst {
             //get all posted comments
             List<WebElement> usersCount = driver.findElements(COMMENT_PAGE_USER_COMMENT_COUNT);
 
+            //check comments
+            Assertions.assertEquals(homePageCommentsCount, CommentsPageIntComments, "Wrong comment amount");
+
             for (WebElement userCount : usersCount) {
                 userCount.findElement(COMMENT_PAGE_USER_COMMENT_COUNT).getText();
                 userCount.findElement(COMMENT_PAGE_USER_COMMENT_COUNT_IND).getText();
-
-                //check comments
-                Assertions.assertEquals(homePageCommentsCount, CommentsPageIntComments, "Wrong comment amount");
 
                 //back to main page
                 List <WebElement> logo = driver.findElements(COMMENT_PAGE_LOGO);
@@ -156,7 +155,8 @@ public class Tvnetfirst {
 
         }
 
-
+        WebDriverWait waitThree = new WebDriverWait(driver, 10);
+        waitThree.until(ExpectedConditions.visibilityOfElementLocated(TITLE));
 
         boolean isFound = false;
         for (WebElement textArticle : articles) {
