@@ -28,7 +28,8 @@ public class Tvnetfirst {
     private final By COMMENT_PAGE_BODY = By.tagName("a");
     private final By COMMENT_PAGE_TITLE = By.xpath(".//h1[(@class = 'article-headline')]");
     private final By COMMENT_PAGE_COMMENTS_COUNT = By.xpath(".//span[contains(@class, 'article-comments-heading')]");
-    private final By COMMENT_PAGE_USER_COMMENT_COUNT = By.xpath(".//li[contains(@id, 'comment-')]");
+    private final By COMMENT_PAGE_USER_COMMENT_COUNT = By.xpath(".//div[contains(@class, 'comments-block')]");
+    private final By COMMENT_PAGE_USER_COMMENT_COUNT_IND = By.xpath(".//div[contains(@class, 'article-comment__container')]");
     private final By COMMENT_PAGE_LOGO = By.xpath(".//a[contains(@class, 'menu-item section')]");
 
     private WebDriver driver;
@@ -39,7 +40,7 @@ public class Tvnetfirst {
         System.setProperty("webdriver.chrome.driver", "c://chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get("http://www.tvnet.lv/");
+        driver.get("https://www.tvnet.lv/");
     }
 
     @Test
@@ -49,7 +50,7 @@ public class Tvnetfirst {
         List<WebElement> articles = driver.findElements(ARTICLE);
 
         //get correct article
-        WebElement article = articles.get(3);
+        WebElement article = articles.get(0);
 
         //get article
         String homePageTitle = article.findElement(TITLE).getText();
@@ -89,17 +90,19 @@ public class Tvnetfirst {
         //find comment count
 
         //acquiring comments and turning into Integer
-        int articleIntComments = 0;
         String rightComments = articleComment.getText();
-        articleIntComments = parseCommentCountFour(rightComments);
 
-        //check it
+
+        //check title
         Assertions.assertTrue(homePageTitle.startsWith(articlePageTitle), "Titles are not equal!");
-        Assertions.assertEquals(homePageCommentsCount, articleIntComments, "Wrong comment amount");
 
-        //open comments page
+
+        //check if comments are empty
         if (!articleComment.findElements(ARTICLE_COMMENTS_COUNT).isEmpty()) {
             articleComment = (articleComment.findElement(ARTICLE_COMMENTS_COUNT));
+            //check comments
+            Assertions.assertEquals(homePageCommentsCount, rightComments, "Wrong comment amount");
+        //open comments page
             articleComment.click();
         }
         else {
@@ -115,35 +118,45 @@ public class Tvnetfirst {
         //get title
         String commentPageTitle = driver.findElement(COMMENT_PAGE_TITLE).getText();
 
-        //get comments
-        WebElement commentPageComments = driver.findElement(COMMENT_PAGE_COMMENTS_COUNT);
-
-        //close browser
-        if (commentPageComments.findElements(COMMENT_PAGE_COMMENTS_COUNT).isEmpty()) {
-            closeBrowser();
-        }
-
-
-        //acquiring comments and turning into Integer
-        int CommentsPageIntComments = 0;
-        CommentsPageIntComments = parseCommentCountFour(rightComments);
-
-        List<WebElement> usersCount = driver.findElements(COMMENT_PAGE_USER_COMMENT_COUNT);
-
-        for (WebElement userCount : usersCount) {
-            userCount.findElement(COMMENT_PAGE_USER_COMMENT_COUNT).getSize();
-
-
-        }
-
-        //check it
+        //check title
         Assertions.assertTrue(homePageTitle.startsWith(commentPageTitle), "Titles are not equal!");
-        Assertions.assertEquals(homePageCommentsCount, CommentsPageIntComments, "Wrong comment amount");
 
-        //back to main page
-        List <WebElement> logo = driver.findElements(COMMENT_PAGE_LOGO);
-        WebElement logoFirst = logo.get(0);
-        logoFirst.click();
+        //get comments
+        List<WebElement> commentPageComments = driver.findElements(COMMENT_PAGE_COMMENTS_COUNT);
+
+        //calculate comments if present
+        if (commentPageComments.isEmpty()) {
+
+            //back to main page if empty
+            List <WebElement> logo = driver.findElements(COMMENT_PAGE_LOGO);
+            WebElement firstButton = logo.get(0);
+            firstButton.click();
+        } else {
+
+            //acquiring comments and turning into Integer
+            int CommentsPageIntComments = 0;
+            CommentsPageIntComments = parseCommentCountFour(rightComments);
+
+            //get all posted comments
+            List<WebElement> usersCount = driver.findElements(COMMENT_PAGE_USER_COMMENT_COUNT);
+
+            for (WebElement userCount : usersCount) {
+                userCount.findElement(COMMENT_PAGE_USER_COMMENT_COUNT).getText();
+                userCount.findElement(COMMENT_PAGE_USER_COMMENT_COUNT_IND).getText();
+
+                //check comments
+                Assertions.assertEquals(homePageCommentsCount, CommentsPageIntComments, "Wrong comment amount");
+
+                //back to main page
+                List <WebElement> logo = driver.findElements(COMMENT_PAGE_LOGO);
+                WebElement firstButton = logo.get(0);
+                firstButton.click();
+            }
+
+
+        }
+
+
 
         boolean isFound = false;
         for (WebElement textArticle : articles) {
