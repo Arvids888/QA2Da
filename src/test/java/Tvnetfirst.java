@@ -17,20 +17,20 @@ public class Tvnetfirst {
 
     private final By ARTICLE = By.tagName("article");
     private final String ARTICLE_BY_TITLE = "NBA zvaigzne Covid-19 dēļ zaudējis septiņus ģimenes locekļus";
-    private final By TITLE = By.xpath(".//span[contains(@class, 'list-article__headline')]");
+    private final By TITLE = By.xpath(".//span[(@class = 'list-article__headline')]");
     private final By COMMENTS_COUNT = By.xpath(".//span[contains(@class, 'article__comment')]");
 
-    private final By ARTICLE_TITLES_AND_COMMENTS = By.tagName("article");
-    private final By ARTICLE_PAGE_TITLE = By.xpath(".//h1[contains(@class, 'article-headline')]");
+    private final By ARTICLE_TITLES = By.tagName("article");
+    private final By ARTICLE_PAGE_TITLE = By.xpath(".//h1[(@itemprop = 'headline name')]");
     private final By ARTICLE_COMMENTS_COUNT = By.xpath(".//span[(@class = 'article-share__item--count')]");
     private final By ARTICLE_COMMENTS_BUTTON = By.xpath(".//a[contains(@class, 'article-share__item--comments')]");
 
     private final By COMMENT_PAGE_BODY = By.tagName("a");
     private final By COMMENT_PAGE_TITLE = By.xpath(".//h1[(@class = 'article-headline')]");
     private final By COMMENT_PAGE_COMMENTS_COUNT = By.xpath(".//span[contains(@class, 'article-comments-heading')]");
-    private final By COMMENT_PAGE_USER_COMMENT_COUNT = By.xpath(".//div[contains(@class, 'comments-block')]");
-    private final By COMMENT_PAGE_USER_COMMENT_COUNT_IND = By.xpath(".//div[contains(@class, 'article-comment__container')]");
-    private final By COMMENT_PAGE_LOGO = By.xpath(".//a[contains(@class, 'menu-item section')]");
+    private final By COMMENT_PAGE_USER_COMMENT_COUNT = By.xpath(".//div[contains(@class, 'comments-block__comments')]");
+    private final By COMMENT_PAGE_USER_COMMENT_COUNT_IND = By.xpath(".//li[contains(@class, 'article-comment')]");
+    private final By COMMENT_PAGE_MENU_BUTTON = By.xpath(".//a[contains(@class, 'menu-item section')]");
 
     private WebDriver driver;
 
@@ -50,7 +50,7 @@ public class Tvnetfirst {
         List<WebElement> articles = driver.findElements(ARTICLE);
 
         //get correct article
-        WebElement article = articles.get(0);
+        WebElement article = articles.get(1);
 
         //get article
         String homePageTitle = article.findElement(TITLE).getText();
@@ -70,7 +70,7 @@ public class Tvnetfirst {
 
 
         //get all articles
-        List <WebElement> articleTitles = driver.findElements(ARTICLE_TITLES_AND_COMMENTS);
+        List <WebElement> articleTitles = driver.findElements(ARTICLE_TITLES);
 
         //get correct article
         WebElement articleTitle = articleTitles.get(0);
@@ -84,30 +84,26 @@ public class Tvnetfirst {
         //get all comments
         List <WebElement> articleComments = driver.findElements(ARTICLE_COMMENTS_COUNT);
 
-
         //get correct comment
         WebElement articleComment = articleComments.get(1);
 
         //acquiring comments and turning into Integer
-        String rightComments = articleComment.getText();
-
+        String getArticleComment = articleComment.getText();
 
         //check title
         Assertions.assertTrue(homePageTitle.startsWith(articlePageTitle), "Titles are not equal!");
-
 
         //check if comments are empty
         if (!articleComment.findElements(ARTICLE_COMMENTS_COUNT).isEmpty()) {
             articleComment = (articleComment.findElement(ARTICLE_COMMENTS_COUNT));
             //check comments
-            Assertions.assertEquals(homePageCommentsCount, rightComments, "Wrong comment amount");
+            Assertions.assertEquals(homePageCommentsCount, getArticleComment, "Wrong comment amount");
         //open comments page
             articleComment.click();
         }
         else {
             commentsButton.click();
         }
-
 
         //wait for title
         WebDriverWait waitTwo = new WebDriverWait(driver, 10);
@@ -121,42 +117,42 @@ public class Tvnetfirst {
         Assertions.assertTrue(homePageTitle.startsWith(commentPageTitle), "Titles are not equal!");
 
         //get comments
-        List<WebElement> commentPageComments = driver.findElements(COMMENT_PAGE_COMMENTS_COUNT);
+        WebElement commentPageComment = driver.findElement(COMMENT_PAGE_COMMENTS_COUNT);
+
+        //get comment
+        String getCommentPageComment = commentPageComment.getText();
+
+        int getIntCommentPageComments = parseCommentCountFour(getArticleComment);
 
         //calculate comments if present
-        if (commentPageComments.isEmpty()) {
+        if (!commentPageComment.isDisplayed()) {
 
             //back to main page if empty
-            List <WebElement> logo = driver.findElements(COMMENT_PAGE_LOGO);
+            List <WebElement> logo = driver.findElements(COMMENT_PAGE_MENU_BUTTON);
             WebElement firstButton = logo.get(0);
             firstButton.click();
         } else {
-
-            //acquiring comments and turning into Integer
-            int CommentsPageIntComments = 0;
-            CommentsPageIntComments = parseCommentCountFour(rightComments);
+            //check comments
+            Assertions.assertEquals(homePageCommentsCount, getIntCommentPageComments, "Wrong comment amount");
 
             //get all posted comments
-            List<WebElement> usersCount = driver.findElements(COMMENT_PAGE_USER_COMMENT_COUNT);
-
-            //check comments
-            Assertions.assertEquals(homePageCommentsCount, CommentsPageIntComments, "Wrong comment amount");
+            WebElement userTab = driver.findElement(COMMENT_PAGE_USER_COMMENT_COUNT);
+            userTab.getText();
+            List<WebElement> usersCount = userTab.findElements(COMMENT_PAGE_USER_COMMENT_COUNT_IND);
 
             for (WebElement userCount : usersCount) {
-                userCount.findElement(COMMENT_PAGE_USER_COMMENT_COUNT).getText();
-                userCount.findElement(COMMENT_PAGE_USER_COMMENT_COUNT_IND).getText();
+                userCount.getText();
+                Assertions.assertEquals(commentPageComment, userCount, "Wrong user amount");
 
                 //back to main page
-                List <WebElement> logo = driver.findElements(COMMENT_PAGE_LOGO);
+                List <WebElement> logo = driver.findElements(COMMENT_PAGE_MENU_BUTTON);
                 WebElement firstButton = logo.get(0);
                 firstButton.click();
             }
-
-
         }
-
         WebDriverWait waitThree = new WebDriverWait(driver, 10);
         waitThree.until(ExpectedConditions.visibilityOfElementLocated(TITLE));
+
 
         boolean isFound = false;
         for (WebElement textArticle : articles) {
