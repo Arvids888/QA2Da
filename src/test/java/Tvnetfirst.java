@@ -50,7 +50,7 @@ public class Tvnetfirst {
         List<WebElement> articles = driver.findElements(ARTICLE);
 
         //get correct article
-        WebElement article = articles.get(1);
+        WebElement article = articles.get(5);
 
         //get article
         String homePageTitle = article.findElement(TITLE).getText();
@@ -137,19 +137,18 @@ public class Tvnetfirst {
 
             //get all posted comments
             WebElement userTab = driver.findElement(COMMENT_PAGE_USER_COMMENT_COUNT);
-            userTab.getText();
-            List<WebElement> usersCount = userTab.findElements(COMMENT_PAGE_USER_COMMENT_COUNT_IND);
+            int userCount = userTab.findElements(COMMENT_PAGE_USER_COMMENT_COUNT_IND).size();
+            String usersCount = String.valueOf(userCount);
 
-            for (WebElement userCount : usersCount) {
-                userCount.getText();
-                Assertions.assertEquals(commentPageComment, userCount, "Wrong user amount");
+
+                Assertions.assertEquals(getCommentPageComment, usersCount, "Wrong user amount");
 
                 //back to main page
                 List <WebElement> logo = driver.findElements(COMMENT_PAGE_MENU_BUTTON);
                 WebElement firstButton = logo.get(0);
                 firstButton.click();
             }
-        }
+
         WebDriverWait waitThree = new WebDriverWait(driver, 10);
         waitThree.until(ExpectedConditions.visibilityOfElementLocated(TITLE));
 
