@@ -18,6 +18,7 @@ public class Tvnet {
 
     private final By ARTICLE = By.tagName("article");
     private final By TITLE = By.xpath(".//span[(@class = 'list-article__headline')]");
+    private final By TITLE_BY_NAME = By.xpath(".//span[(@itemprop = 'headline name')]");
     private final By COMMENTS_COUNT = By.xpath(".//span[contains(@class, 'article__comment')]");
 
     private final By ARTICLE_TITLES = By.tagName("article");
@@ -35,6 +36,7 @@ public class Tvnet {
 
     @BeforeEach
     public void preconditions() {
+
         //open browser
         System.setProperty("webdriver.chrome.driver", "c://chromedriver.exe");
         driver = new ChromeDriver();
@@ -47,13 +49,13 @@ public class Tvnet {
 
         //scroll to see elements
         JavascriptExecutor scroll = (JavascriptExecutor) driver;
-        scroll.executeScript("window.scrollBy(0,1000)");
+        scroll.executeScript("window.scrollBy(0,700)");
 
         //get all articles
         List<WebElement> articles = driver.findElements(ARTICLE);
 
         //get correct article
-        WebElement article = articles.get(0);
+        WebElement article = articles.get(1);
 
         //get article
         String homePageTitle = article.findElement(TITLE).getText();
@@ -158,12 +160,12 @@ public class Tvnet {
         //wait for title and scroll
         WebDriverWait waitThree = new WebDriverWait(driver, 10);
         waitThree.until(ExpectedConditions.visibilityOfElementLocated(TITLE));
-        scroll.executeScript("window.scrollBy(0,900)");
+        scroll.executeScript("window.scrollBy(0,800)");
 
         //find and click title by text
-        WebElement elementByName = driver.findElement(By.linkText(">>>ARTICLE_NAME<<<"));
-        for (WebElement byName : articles) {
-            byName.findElement((By) elementByName).click();
+        List<WebElement> listByName = driver.findElements(TITLE_BY_NAME);
+        for (WebElement byName : listByName) {
+            byName.findElement((By.partialLinkText(""))).click();
 
         }
 
