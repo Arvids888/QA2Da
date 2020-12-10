@@ -44,6 +44,7 @@ public class Tvnet {
 
     @Test
     public void threePagesTest() {
+
         //scroll to see elements
         JavascriptExecutor scroll = (JavascriptExecutor) driver;
         scroll.executeScript("window.scrollBy(0,1000)");
@@ -73,6 +74,7 @@ public class Tvnet {
             e.printStackTrace();
         }
 
+        //wait for title
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOfElementLocated(ARTICLE_PAGE_TITLE));
 
@@ -153,14 +155,16 @@ public class Tvnet {
             firstButton.click();
         }
 
+        //wait for title and scroll
         WebDriverWait waitThree = new WebDriverWait(driver, 10);
         waitThree.until(ExpectedConditions.visibilityOfElementLocated(TITLE));
-        scroll.executeScript("window.scrollBy(0,1000)");
+        scroll.executeScript("window.scrollBy(0,900)");
 
-        List<WebElement> listByName = driver.findElements(By.linkText(">>>ARTICLE_NAME<<<"));
+        //find and click title by text
+        WebElement elementByName = driver.findElement(By.linkText(">>>ARTICLE_NAME<<<"));
         for (WebElement byName : articles) {
-            byName.findElement((By) listByName);
-            byName.click();
+            byName.findElement((By) elementByName).click();
+
         }
 
     }
