@@ -69,13 +69,6 @@ public class Tvnet {
         //click on it
         article.findElement(TITLE).click();
 
-        //wait for annoying ad to end
-        try {
-            Thread.sleep(9000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         //wait for title
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOfElementLocated(ARTICLE_PAGE_TITLE));
