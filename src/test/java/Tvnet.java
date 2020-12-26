@@ -17,8 +17,7 @@ import java.util.List;
 public class Tvnet {
 
     private final By ARTICLE = By.tagName("article");
-    private final By TITLE = By.xpath(".//span[(@class = 'list-article__headline')]");
-    private final By TITLE_BY_NAME = By.xpath(".//span[(@itemprop = 'headline name')]");
+    private final By TITLE = By.xpath(".//span[(@itemprop = 'headline name')]");
     private final By COMMENTS_COUNT = By.xpath(".//span[contains(@class, 'article__comment')]");
 
     private final By ARTICLE_TITLES = By.tagName("article");
@@ -30,7 +29,7 @@ public class Tvnet {
     private final By COMMENT_PAGE_COMMENTS_COUNT = By.xpath(".//span[contains(@class, 'article-comments-heading')]");
     private final By COMMENT_PAGE_USER_COMMENT_COUNT = By.xpath(".//div[contains(@class, 'comments-block__comments')]");
     private final By COMMENT_PAGE_USER_COMMENT_COUNT_IND = By.xpath(".//li[contains(@class, 'article-comment')]");
-    private final By COMMENT_PAGE_MENU_BUTTON = By.xpath(".//a[contains(@class, 'menu-item section')]");
+    private final By COMMENT_PAGE_MENU_BUTTON = By.xpath(".//a[contains(@class, 'flex header-logo')]");
 
     private WebDriver driver;
 
@@ -45,7 +44,7 @@ public class Tvnet {
     }
 
     @Test
-    public void threePagesTest() {
+    public void threePagesTest() throws InterruptedException {
 
         //scroll to see elements
         JavascriptExecutor scroll = (JavascriptExecutor) driver;
@@ -55,7 +54,7 @@ public class Tvnet {
         List<WebElement> articles = driver.findElements(ARTICLE);
 
         //get correct article
-        WebElement article = articles.get(1);
+        WebElement article = articles.get(2);
 
         //get article
         String homePageTitle = article.findElement(TITLE).getText();
@@ -73,6 +72,8 @@ public class Tvnet {
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.visibilityOfElementLocated(ARTICLE_PAGE_TITLE));
 
+        //wait for ad
+        Thread.sleep(9000);
 
         //get all articles
         List<WebElement> articleTitles = driver.findElements(ARTICLE_TITLES);
@@ -156,14 +157,15 @@ public class Tvnet {
         scroll.executeScript("window.scrollBy(0,800)");
 
         //find and click title by text
-        List<WebElement> listByName = driver.findElements(TITLE_BY_NAME);
-        for (WebElement byName : listByName) {
-            byName.findElement((By.partialLinkText(""))).click();
-
+        String byName = "Ungārijā un Vācijā pret Covid-19 jau vakcinēti pirmie cilvēki";
+        List<WebElement> titlesList = driver.findElements(TITLE);
+        for (WebElement searchByName : titlesList) {
+            if (searchByName.getText().startsWith(byName)) {
+                searchByName.click();
+                break;
+            }
         }
-
     }
-
 
 
     private int parseCommentCountOne(String textToParse) {
